@@ -11,7 +11,17 @@ class ForecastViewController: UIViewController {
     @IBOutlet weak var forecastImageView: UIImageView!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var temperatureLabel: UILabel!
+    @IBOutlet weak var precipitationLabel: UILabel!
+    @IBOutlet weak var windSpeedLabel: UILabel!
     
+    @IBAction func didTapBackButton(_ sender: UIButton) {
+        selectedForecastIndex = max(0, selectedForecastIndex - 1) // don't go lower than 0 index
+        configure(with: forecasts[selectedForecastIndex]) // change the forecast shown in the UI
+    }
+    @IBAction func didTapForwardButton(_ sender: UIButton) {
+        selectedForecastIndex = min(forecasts.count - 1, selectedForecastIndex + 1) // don't go lower than 0 index
+        configure(with: forecasts[selectedForecastIndex]) // change the forecast shown in the UI
+    }
     // displaying multiple forecasts
     private var forecasts = [WeatherForecast]()
     private var selectedForecastIndex = 0
@@ -23,6 +33,7 @@ class ForecastViewController: UIViewController {
         // Some functions require calling the super class implementation
         
         super.viewDidLoad()
+        addGradient()
         forecasts = createMockData()
         configure(with: forecasts[selectedForecastIndex])
 //        let fakeData = WeatherForecast(weatherCode: .partlyCloudy,
@@ -60,12 +71,24 @@ class ForecastViewController: UIViewController {
     
     
      private func configure(with forecast: WeatherForecast) {
+       
        forecastImageView.image = forecast.weatherCode.image
        descriptionLabel.text = forecast.weatherCode.description
        temperatureLabel.text = "\(forecast.temperature)°F"
+       precipitationLabel.text = "\(forecast.precipitation)%"
+       windSpeedLabel.text = "\(forecast.windSpeed) mph"
+         
        let dateFormatter = DateFormatter()
        dateFormatter.dateFormat = "MMMM d, yyyy"
        dateLabel.text = dateFormatter.string(from: forecast.date)
      }
-    
+    private func addGradient() {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = view.bounds
+        gradientLayer.colors = [UIColor(red: 0.25, green: 0.5, blue: 0.99, alpha: 1.00).cgColor,
+                                UIColor(red: 0.23, green: 0.99, blue: 0.97, alpha: 1.00).cgColor]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        view.layer.insertSublayer(gradientLayer, at: 0)
+    }
 }
